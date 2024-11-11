@@ -1,0 +1,415 @@
+//1.1//
+create table Product_Info(
+Maker varchar(10),
+Model_No varchar(10),
+Type varchar(2)
+);
+create table PC(
+Model_No varchar(10),
+Speed number(2),
+RAM number(4),
+HD number(3),
+CD number(3),
+Price number(10)
+);
+create table Laptop(
+Model_No varchar(10),
+Speed number(2),
+RAM number(4),
+HD number(3),
+Screensize number(3),
+Price number(10)
+);
+create table Printer(
+Model_No varchar(10),
+Color varchar(10),
+P_Type varchar(10),
+Price number(10)
+);
+
+desc Product_Info;
+desc PC;
+desc Laptop;
+desc Printer;    
+
+ //1.2//
+alter table Product_Info modify Type NOT NULL ; 
+
+//2.1//
+// VALUES FOR 1ST TABLE//
+
+insert into Product_Info values('HCL','PC112','PC');
+insert into Product_Info values('HCL','LP113','LP');
+insert into Product_Info values('ZENITH','PR114','PR');
+insert into Product_Info values('WIPRO','PC122','PC');
+insert into Product_Info values('WIPRO','LP123','LP');
+insert into Product_Info values('WIPRO','PR124','PR');
+insert into Product_Info values('IBM','PC134','PC');
+insert into Product_Info values('HCL','LP114','LP');
+insert into Product_Info values('IBM','PC132','PC');
+insert into Product_Info values('IBM','LP133','LP');
+insert into Product_Info values('IBM','PR134','PR');
+
+//2.2//
+//VALUES FOR 2ND TABLE//
+
+insert into PC values('PC112',2,256,60,52,40000);
+insert into PC values('PC122',2,256,60,48,42000);
+insert into PC values('PC132',1,128,100,68,50000);
+insert into PC values('PC134',1,512,60,68,80000);
+
+//2.3//
+// VALUES FOR 3RD TABLE//
+
+insert into Laptop values('LP113',1,64,40,14,59000);
+insert into Laptop values('LP123',2,128,60,16,72000);
+insert into Laptop values('LP133',2,256,80,17,100000);
+insert into Laptop values('LP114',2,128,40,17,45000);
+
+//2.4//
+//VALUES FOR 4TH TABLE//
+
+insert into Printer values('PR114','TRUE','ÍNK',17000);
+insert into Printer values('PR124','FALSE','DOT',12000);
+insert into Printer values('PR134','TRUE','LASER',17000);
+
+//1.3//
+alter table PC modify Speed default 2;
+
+commit;
+
+//1.4//
+alter table Product_Info add constraint pk_model primary key (Model_No); 
+alter table PC add constraint pk_1 primary key (Model_No);
+desc PC;
+select * from pc;
+select constraint_name, constraint_type from user_constraints where table_name='PC';
+
+//1.5//
+alter table PC add foreign key (Model_No) references Product_Info (Model_No) on delete cascade;  
+alter table Laptop add foreign key (Model_No) references Product_Info (Model_No) on delete cascade; 
+alter table Printer add foreign key (Model_No) references Product_Info (Model_No) on delete cascade; 
+
+//1.6//
+alter table Product_Info add constraint ck1 check( Type='PC'or Type='LP' or Type='PR'); 
+alter table PC add constraint ck2 check(Price>0); 
+alter table Laptop add constraint ck3 check(Price>0);
+alter table Printer add constraint ck4 check(Price>0);
+
+//1.8// 
+alter table Printer add printercode varchar(10);
+
+//1.9//
+alter table Printer add constraint uni_1 unique(printercode);
+
+//1.10//
+alter table Printer modify printercode varchar(12);
+
+create table Type_Info as select * from Product_Info;
+
+//1.11//
+truncate table Type_Info;
+
+//1.12//
+drop table Type_Info;
+
+//2.5//
+insert into Product_Info values('HCL','PC100','PC');
+insert into PC values('PC100',3,256,40,52,50000);
+
+//2.6//
+select * from Product_Info;
+
+//2.7//
+delete from PC where CD<50;
+
+//2.8//
+update Printer set Price= Price+(Price*0.12) where P_Type = 'ÍNK';
+update Printer set Price= Price+(Price*0.14) where P_Type = 'DOT';
+update Printer set Price= Price+(Price*0.1) where P_Type = 'LASER';
+
+//2.9//
+update Laptop set Price= Price+(Price*0.1233) where Speed>=2;
+
+//2.10.a//
+create table Laptop_new as  select * from Laptop;
+
+insert into Laptop_new(Model_No,Speed,RAM,HD,Price)
+select translate(Model_No,'PC','LP'),Speed,RAM,HD,Price from PC;
+
+select * from Laptop_new;
+
+//2.10.b//
+UPDATE Laptop_new SET Screensize=17  
+WHERE Model_No IN (SELECT TRANSLATE(Model_No,'PC','LP') FROM PC);
+
+//2.10.c//
+update Laptop_new set Price=Price+15000 
+where Model_No in (select translate(Model_No,'PC','LP') from PC);
+
+//3.1//
+select * from PC where RAM=128 or RAM=256 and HD>=50;
+
+//3.2//
+select * from Printer where Model_No not in ('PR112','PR124');
+
+select * from Printer where Model_No <>'PR124';
+
+//3.3//
+select * from Laptop_new order by Screensize desc;
+select * from Laptop_new order by Screensize asc;
+
+//3.4//
+select * from Product_Info where Model_No like 'PC%';
+
+//3.5//
+select * from Laptop_new where Screensize <> 17;
+
+//3.6//
+select * from Printer where Price between 5000 and 10000;
+
+//3.7//
+select Model_No,Speed,RAM*2,HD,CD,Price from PC ;
+
+//3.8//
+select Model_No as printer_model,Color as colorinfo, P_type as printertype, 
+Price from Printer;
+
+//3.10//
+select RAM from PC group by RAM;
+
+//3.11//
+select HD from PC group by HD;
+
+//3.12//
+select count(HD) from PC  group by HD having count(HD)>2;
+
+
+create table WORKERSKILL (
+Name varchar(20),
+Skill Varchar(20),
+City varchar(10),
+Phone varchar(15) 
+);
+TRUNCATE TABLE WORKERSKILL;
+insert into WORKERSKILL values ('&Name', '&Skill', '&City', &Phone); 
+SELECT * FROM WORKERSKILL;
+
+create table WORKER (
+Name varchar(20),
+Age number(2)
+);
+
+insert into WORKER values ('&Name', &Age);
+SELECT * FROM WORKER;
+
+
+//3.9//
+select Name from WORKER union all select Name from WORKERSKILL;
+select Name from WORKER intersect select Name from WORKERSKILL;
+select Name from WORKER minus select Name from WORKERSKILL;
+
+
+//4.1//
+select (max(Price)-min(Price)) as difference from laptop;
+//4.2//
+select stddev(Price) as Standard_dev from pc;
+select variance(Price) as variation from pc;
+//4.3//
+select name,lpad(age,4,'-') from worker;
+//4.4.a//
+update pc set Price=Price + (Price*0.1233);
+//4.4.b//
+select lower(Model_No) as Model_No,round(Price,2) as Price from pc;
+//4.5//
+select name from worker order by length(name);
+//4.6//
+select name,substr(Phone,instr(Phone,'-',1,2)) from WORKERSKILL;
+//4.7//
+select instr(name,'A') from WORKERSKILL;
+//4.8//
+select City from WORKERSKILL where soundex(City)=soundex('sidney');
+//4.11//
+select * from Printer where Price in (select Price from Printer where Model_No in 
+(select Model_No from product_info where maker='IBM'));
+//4.12//
+select * from Laptop_new where screen= 
+(select screen from Laptop_new where Model_No='LP114');
+//4.9//
+select to_char(sysdate,'mon-yyyy') as "sysdate" from DUAL;
+select to_char(sysdate,'month dd yyyy') as "sysdate" from DUAL;
+select to_char(sysdate,'dd-mm-yy hh:mi:ss') as "sysdate" from DUAL;
+//4.10//
+select replace ('great','a','e') as replace from dual;
+select translate ('is','i','a') as translate from dual;
+select decode ('type','PC','personal computer','LP','Laptop','PR','Printer') 
+from Product_Info;
+	//5.1//
+select WORKERSKILL.Name,WORKER.Age from WORKER,WORKERSKILL;
+//5.2//
+select Product_Info.Maker,PC.Model_No,Laptop.Speed 
+from Product_Info,PC,Laptop;
+//5.3//
+select a.Name,a.Age,b.Skill from WORKER a,WORKERSKILL b 
+where a.Name=b.Name and a.Age>30;
+//5.4//
+select a.Name,a.Age,b.Skill from WORKER a,WORKERSKILL b 
+where a.Name <> b.Name and a.Age>30;
+//5.5//
+select a.Model_No,a.Speed,b.RAM,b.HD,a.CD,b.Price from 
+PC a,PC b where a.HD=b.HD ;
+//5.6//
+select a.Maker,b.Model_No,b.Price from 
+Product_Info a,PC b where a.Model_No=b.Model_No;
+//5.7//
+select a.Model_No,b.Price from 
+PC a,Laptop_new b where a.Price=b.Price;
+//5.8//
+select a.Maker,b.Model_No,b.Price from Product_Info a,PC b where a.Model_No(+)=b.Model_No;
+select a.Maker,b.Model_No,b.Price from Product_Info a,PC b where a.Model_No=b.Model_No(+);
+select a.Maker,b.Model_No,b.Price from Product_Info a,PC b where a.Model_No=b.Model_No union select a.Maker,b.Model_No,b.Price from Product_Info a,PC b where a.Model_No=b.Model_No;
+//5.9//
+select nvl(w.Name,'****'),
+nvl(w.Age,0),ws.Skill from
+WORKER w,WORKERSKILL ws where w.Name(+)=ws.Name;
+
+
+//6.1//
+create view Price_Info as select t1.Model_No, t1.Maker, t2.Price as 
+value from Product_Info t1, PC t2;
+//6.2//
+create view Price6000 as select * from Printer where Price>6000;
+//6.3//
+alter view Price_Info as select t1.Model_No, t1.Maker, t2.Price as value from Product_Info t1, PC t2 where Price>5000;
+--not possible because the view has 2 base tables
+alter view Price6000 as select * from Printer where Price>7000;
+--same
+insert into Price_Info (Model_No,Maker,Price) 
+values ("PC123","IBM",35000);
+not completed.... 
+insert into Price6000 (Model_No,Color,P_Type,Price) 
+values ('PR128','TRUE','LASER',15000);
+--inserion possible only when one base table is present
+ and the base table doesnt have foreign key constraint
+//6.4//
+delete from Price6000 where Model_No='PR114';
+//6.5//
+create unique index Worker_name on WORKER (Name);
+//6.6//
+create index Worker_city on WORKERSKILL (initcap(City));
+//6.7//
+create sequence ascend_100 start with 100 increment by 1;
+//6.8//
+create sequence descend_100 start with 100 increment 
+by -1 minvalue 1 maxvalue 100 cycle;
+//6.9//
+
+//6.10//
+create synonym G20K for WORKERSKILL;
+
+
+//7//
+set serveroutput on;
+declare
+r integer;
+pi float :=3.14;
+area number(5);
+begin
+r := &r;
+area := pi*r*r;
+dbms_output.put_line ('Area of the circle :' || area);
+end;
+/
+
+
+create table Printer(
+Model_No varchar(10),
+Color varchar(10),
+P_Type varchar(10),
+Price number(10)
+);
+
+//8.1//
+set serveroutput on;
+create or replace procedure printerdetails(PModel_No in varchar , P_type out varchar , color out varchar ,price out number)
+as
+begin
+select P_Type,Color,Price into P_type,color,price from Printer where Model_No=PModel_No;
+end;
+/
+
+
+
+declare 
+P_type varchar(10);
+color varchar(10);
+price number(10);
+begin
+printerdetails('PR124',P_type,color,price);
+dbms_output.put_line('Printer type:' ||P_type);
+dbms_output.put_line('Printer color:' ||color);
+dbms_output.put_line('Printer price:' ||price);
+end;
+/
+
+//8.2//
+set serveroutput on;
+create or replace function printerprice(PModel_No in varchar)
+return number is 
+price number(10);
+begin
+select Price into price from Printer where Model_No=PModel_No;
+return price;
+end;
+/
+
+declare 
+price number(10);
+begin
+price := printerprice('PR124');
+dbms_output.put_line('Printer price:' ||price);
+end;
+/
+
+//9 //
+set serveroutput on;
+declare
+cursor c1 is select * from Laptop where Screensize>15;
+lap Laptop%rowtype;
+price_new number;
+price_old number;
+begin
+open c1;
+loop
+fetch c1 into lap;
+exit when c1%NOTFOUND;
+price_old := lap.Price;
+price_new := lap.Price + lap.Price*0.1;
+dbms_output.put_line('Model Number: '||lap.Model_No);
+dbms_output.put_line('old price: '||price_old);
+dbms_output.put_line('new price: '||price_new);
+end loop;
+close c1;
+end;
+/
+
+
+declare
+cursor c1 is select * from Laptop where Screensize>15 for update of Price;
+lap Laptop%rowtype;
+new_price number;
+begin
+open c1;
+loop
+fetch c1 into lap;
+exit when c1%NOTFOUND;
+new_price := lap.Price;
+update Laptop
+set Price = Price+100
+where current of c1;
+dbms_output.put_line('Model_No :'||lap.Model_No);
+dbms_output.put_line('Price :'||lap.Price);
+end loop;
+close c1;
+end;
+/	
